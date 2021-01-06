@@ -1,0 +1,40 @@
+﻿@model IEnumerable<EntityModels.Story>
+
+@if (Model != null && Model.Count() > 0)
+{
+    foreach (var story in Model)
+    {
+    <div class="row">
+        <div class="col-md-12">
+            <div class="stroy-content">
+                @*<h3 class="story-title">*@<a class="story-title" asp-action="WriteStory" asp-route-id="@story.Id">@story.Title</a>@*</h3>*@
+                <div style="padding-top:4px">
+                    @*<h3 class="story-desc">*@<a class="story-desc" asp-action="WriteStory" asp-route-id="@story.Id">@story.Description</a>@*</h3>*@
+                </div>
+            </div>
+            <div class="story-foot">
+                <div class="story-foot-desc">
+                    Last edited on @story.ModifiedOn.ToString("dd/MMM/yyy hh:mm tt")
+                </div>
+                <div class="dropdown more-option-dropdown">
+                    <button class="more-option dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fa fa-arrow"></i>
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <a class="dropdown-item" asp-action="WriteStory" asp-route-id="@story.Id"><i class="fa fa-pencil-square-o" aria-hidden="true"></i>Edit</a>
+                        <a class="dropdown-item" asp-action="ViewStory" asp-route-id="@story.Id"><i class="fa fa-eye" aria-hidden="true"></i>View</a>
+                        <a class="dropdown-item" href="JavaScript:void(0);" onclick="DeleteStory(@story.Id, this)"><i class="fa fa-trash" aria-hidden="true"></i>Delete</a>
+                        <a asp-action="DeleteStory" asp-route-id="@story.Id" style="display:none"></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr/>
+    }
+}
+else {
+    <div class="no-content">
+        You have not any story in draft.
+    </div>
+}

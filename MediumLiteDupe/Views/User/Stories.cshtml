@@ -1,0 +1,70 @@
+﻿@model IEnumerable<EntityModels.Story>
+
+@{
+    ViewData["Title"] = "Stories";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div style="margin-bottom:40px">
+    <h1 style="display:contents">Your Stories</h1>
+    <div class="float-right">
+        <a class="btn btn-green" asp-action="WriteStory">Write a Story</a>
+    </div>
+</div>
+<div style="clear:both"></div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-12 story-menu">
+                <div class="story-menu-item menu-selected" onclick="LoadStory(this,'D')"><span class="count">Drafts @Model.Count()</span></div>
+                <div class="story-menu-item" onclick="LoadStory(this,'P')"><span class="count">Published @ViewBag.PublishCount</span></div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div id="partialContent" class="col-md-12">
+                <partial name="_DraftStories" model="Model" />
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        function LoadStory(e,type) {
+            $("#divLoader").modal("show");
+            $(".story-menu-item").removeClass('menu-selected');
+            $(e).addClass('menu-selected');
+            $.ajax({
+                url: "/User/GetStories/" + type,
+                method: "Get",
+                success: function (data) {
+                    $("#partialContent").html(data);                    
+                },
+                complete: function (data) {
+                    $("#divLoader").modal("hide");
+                }
+            });
+        }
+        function DeleteStory(id, e) {
+            swal({
+                title: 'Delete Story',
+                text: "Are you sure you want to delete this story?",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonClass: "btn-danger",
+                cancelButtonClass: "btn-green",
+                confirmButtonText: "Delete",
+                cancelButtonText: "Cancel",
+                closeOnConfirm: false                
+            },
+                (isConfirmed) => {
+                    if (isConfirmed) {
+                        console.log($(e).next("a"));
+                        $(e).next("a")[0].click();
+                    }
+                }
+            );
+        }
+    </script>
+}
+

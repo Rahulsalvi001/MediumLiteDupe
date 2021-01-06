@@ -1,0 +1,37 @@
+﻿@model IEnumerable<EntityModels.StoryDashboard>
+@{
+    ViewData["Title"] = "Dashoard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@if ( Model.Count() > 0)
+{
+    foreach (var story in Model)
+    {
+        <div class="row">
+            <div class="col-md-12">
+                <div class="story-user-pfl">
+                    <img src="@story.UserImgSrc" alt="User" class="story-usr-pic" />
+                    <span class="story-user">@story.UserName</span>
+                </div>
+                <div class="stroy-content">
+                    <a class="story-title" asp-controller="User" asp-action="ViewStory" asp-route-id="@story.Id" target="_blank">@story.Title</a>                    
+                </div>
+                <div class="story-foot">
+                    <div class="story-foot-desc">
+                        Published on @story.ModifiedOn.ToString("MMM dd, yyyy")
+                    </div>                    
+                </div>
+            </div>
+        </div>
+        <hr />
+    }
+}
+else
+{
+    <div class="no-content">
+        There is not any story published yet.
+    </div>
+}
+
+

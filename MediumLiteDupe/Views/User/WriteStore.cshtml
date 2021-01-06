@@ -1,0 +1,48 @@
+﻿
+@{
+    ViewData["Title"] = "Write a story";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>EditorJS</h1>
+<div class="container">
+    <div id="editorjs"></div>
+</div>
+<div onclick="myFunction()" class="btn">Save</div>
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/@@editorjs/editorjs@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@@editorjs/header@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@@editorjs/paragraph@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@@editorjs/simple-image@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@@editorjs/embed@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@@editorjs/delimiter@latest"></script>
+<script>
+    const editor = new EditorJS({
+        holder: 'editorjs',
+
+        /** 
+         * Available Tools list. 
+         * Pass Tool's class or Settings object for each Tool you want to use 
+         */
+        tools: {
+            header: Header,
+            delimiter: Delimiter,
+            paragraph: {
+                class: Paragraph,
+                inlineToolbar: true,
+            },
+            embed: Embed,
+            image: SimpleImage,
+        }
+
+    }
+    );
+    function myFunction() {
+        editor.save().then((output) => {
+            console.log('Data: ', output);
+        }).catch((error) => {
+            console.log('Saving failed: ', error)
+        });
+    }
+</script>
+}

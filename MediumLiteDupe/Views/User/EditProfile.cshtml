@@ -1,0 +1,218 @@
+﻿@model EntityModels.AppUser
+
+@{
+    ViewData["Title"] = "EditProfile";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    string profileImgSrc = Url.Content("~/Images/DummyProfile.png");
+    if (Model.UserImage != null && Model.UserImage.Data != null)
+    {
+        var base64 = Convert.ToBase64String(Model.UserImage.Data);
+        profileImgSrc = String.Format("data:image/{0};base64,{1}", Model.UserImage.ExtensionType, base64);
+    }
+
+}
+
+
+<h4>About</h4>
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="EditProfile" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="row profile-block-margin">
+                <div class="col-md-9 form-group">
+                    <label class="control-label profile-lbl">Name</label>
+                    <label class="form-control profile-textbox">@Model.Name</label>
+                    <input id="txtName" asp-for="Name" class="form-control profile-textbox hide" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                    <div class="description">Your name appears on your Profile page, as your byline, and in your responses. It is a required field.</div>
+                </div>
+                <div class="col-md-3 form-group">
+                    <button type="button" class="btn border profileEdit">Edit</button>
+                    <button type="button" value="Name" class="btn border profileSave hide">Save</button>
+                    <button type="button" class="btn border profileCancel hide">Cancel</button>
+                </div>
+            </div>
+            <div class="row profile-block-margin">
+                <div class="col-md-9 form-group">
+                    <label class="control-label profile-lbl">Bio</label>
+                    <label class="form-control profile-textbox">
+                        @if (string.IsNullOrWhiteSpace(Model.BioDescription))
+                        {
+                            <span class="defaultValue">Add Your Bio</span>
+                        }
+                        else
+                        {
+                            <span class="actualValue">@Model.BioDescription</span>
+                        }
+                    </label>
+                    <input id="txtBioDesc" asp-for="BioDescription" class="form-control profile-textbox hide" placeholder="Add Your Bio" />
+                    <div class="description">Your bio appears on your Profile page. Max 160 characters.</div>
+                </div>
+                <div class="col-md-3 form-group">
+                    <button type="button" class="btn border profileEdit">Edit</button>
+                    <button type="button" value="Bio" class="btn border profileSave hide">Save</button>
+                    <button type="button" class="btn border profileCancel hide">Cancel</button>
+                </div>
+            </div>
+            <div class="row profile-block-margin">
+                <div class="col-md-9 form-group">
+                    <label class="control-label profile-lbl">Photo</label>
+                    <div class="row">
+                        <div class="col-md-9">
+                            <div class="description" style="margin-top: -12px;">Your photo appears on your Profile page and with your stories across Medium.</div>
+                            <div class="description">Recommended size: Square, at least 1000 pixels per side. File type: JPG, PNG or GIF.</div>
+                        </div>
+                        <div class="ImageProfiler col-md-3">
+                            <img id="ReadOnlyProfilePic" src="@profileImgSrc" width="80" height="80" class="circle-img" />
+                            <div id="divProfileImg" class="container hide">
+                                <div class="picture-container">
+                                    <div class="picture">
+                                        <img src=""
+                                             class="picture-src" id="ProfilePicPreview" title="">
+                                        <input type="file" id="profile-pic" class="" name="profilePic" accept="image/*">
+                                    </div>
+                                    <h6 class="pic-header">Choose Picture</h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 form-group">
+                    <button type="button" class="btn border profilePicEdit">Edit</button>
+                    <button type="button" class="btn border profilePicSave hide">Save</button>
+                    <button type="button" class="btn border profilePicCancel hide">Cancel</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Cancel</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        function readURL(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    $('#ProfilePicPreview').attr('src', e.target.result).fadeIn('slow');
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+        $(document).ready(function () {
+            $("#profile-pic").change(function () {
+                var imgbytes = this.files[0].size; // Size returned in bytes.
+                var imgkbytes = Math.round(parseInt(imgbytes) / 1024);
+                if (imgkbytes > 200) {
+                    $('#profile-pic').val("");
+                    toastr.error("Image size can not be more than 200kb");
+                }
+                else {
+                    readURL(this);
+                }
+            });
+            $(".profileEdit").click(function () {
+                var $row = $(this).closest('.row');
+                $row.find('.hide').removeClass('hide');
+                $row.find('label.profile-textbox').addClass('hide');
+                $row.find('input.profile-textbox').focus();
+                var value = $row.find('label.profile-textbox').text().trim();
+                if ($row.find('.defaultValue').length > 0) {
+                    $row.find('input.profile-textbox').val('');
+                }
+                else {
+                    $row.find('input.profile-textbox').val(value);
+                }
+                $(this).addClass("hide");
+            });
+            $(".profileCancel").click(function () {
+                $(this).closest('.row').find('.hide').removeClass('hide');
+                $(this).closest('.row').find('input.profile-textbox').addClass('hide');
+                $(this).closest('.row').find('.profileSave,.profileCancel').addClass('hide');
+            });
+            $(".profileSave").click(function () {
+                var $row = $(this).closest('.row');
+                var _field = $(this).val();
+                var _val = $("#txtName").val();
+                if (_field == "Bio")
+                    _val = $("#txtBioDesc").val();
+                $.ajax({
+                    url: "/User/EditProfile",
+                    method: "Post",
+                    data: { field: _field, val: _val },
+                    success: function (data) {
+                        if (data.success) {
+                            toastr.success(data.message);
+                            if (_field == "Name")
+                                $row.find('label.profile-textbox').text(_val);
+                            else
+                                $row.find('label.profile-textbox').html(`<span class="actualValue">${_val}</span>`);
+                            $row.find('.hide').removeClass('hide');
+                            $row.find('input.profile-textbox').addClass('hide');
+                            $row.find('.profileSave,.profileCancel').addClass('hide');
+                        }
+                        else {
+                            toastr.error(data.message);
+                        }
+                    }
+                });
+
+            });
+            $(".profilePicEdit").click(function () {
+                $("#ReadOnlyProfilePic, .profilePicEdit").addClass("hide");
+                $("#divProfileImg, .profilePicSave, .profilePicCancel").removeClass("hide");
+            });
+            $(".profilePicCancel").click(function () {
+                $("#ReadOnlyProfilePic, .profilePicEdit").removeClass("hide");
+                $("#divProfileImg, .profilePicSave, .profilePicCancel").addClass("hide");
+                $('#ProfilePicPreview').attr('src', '');
+                $('#profile-pic').val("");
+            });
+            $(".profilePicSave").click(function () {
+                if ($('#profile-pic').val() == "") {
+                    toastr.error("Please select image to upload");
+                }
+                else {
+                    $("#divLoader").modal("show");
+                    var formData = new FormData();
+                    var pic = $('#profile-pic')[0].files[0];
+                    formData.append("profilePic", pic);
+                    $.ajax({
+                        url: "/User/SaveProfilePic",
+                        method: "Post",
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        cache: false,
+                        success: function (data) {
+                            if (data.success) {
+                                toastr.success(data.message);
+                                $("#ReadOnlyProfilePic, .profilePicEdit").removeClass("hide");
+                                $("#divProfileImg, .profilePicSave, .profilePicCancel").addClass("hide");
+                                $('#ProfilePicPreview').attr('src', '');
+                                $('#profile-pic').val("");
+                                $('#ReadOnlyProfilePic').attr('src', data.imageSrc);
+                            }
+                            else {
+                                toastr.error(data.message);
+                            }
+                        },
+                        error: function (jqXHR, status, error) {
+                            toastr.error('Failed to update profile image');
+                        },
+                        complete: function (data) {
+                            $("#divLoader").modal("hide");
+                        }
+
+                    });
+                }
+            });
+        });
+    </script>
+}
