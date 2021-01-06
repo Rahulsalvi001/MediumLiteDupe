@@ -19,12 +19,13 @@
         <div class="col-md-12 form-group">
             <textarea id="StoryContent" asp-for="StoryContent" type="text" class="form-control" placeholder="Write your story here.."></textarea>
             <input type="hidden" asp-for="Description" id="desc" />
+            <span id="errContent" class="text-danger" style="display:none">Story content is required to publish</span>
         </div>
     </div>
     <div class="row">
         <div class="col-md-12 btn-block">
-            <button type="submit" class="btn-primary" name="Status" value="1" id="btnSave" onclick="return Validate()">Save</button>
-            <button type="submit" class="btn-primary" name="Status" value="2" id="btnPublish">Publish</button>
+            <button type="submit" class="btn-primary" name="Status" value="1" id="btnSave" onclick="return Validate(1)">Save</button>
+            <button type="submit" class="btn-primary" name="Status" value="2" id="btnPublish" onclick="return Validate(2)">Publish</button>
         </div>
     </div>
 </form>
@@ -34,13 +35,17 @@
     <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.18/summernote.js"></script>
 
     <script>
-        function Validate() {
+        function Validate(type) {
             var desc = $($("#StoryContent").summernote("code")).text().substr(0, 100);
             $("#desc").val(desc);
-            $("#errTitle").hide();
+            $("#errTitle, #errContent").hide();
             var isValid = true;
             if ($("#txtTitle").val() == "") {
                 $("#errTitle").show();
+                isValid = false;
+            }
+            if (type == 2 && $("#StoryContent").val() == "") {
+                $("#errContent").show();
                 isValid = false;
             }
             return isValid;

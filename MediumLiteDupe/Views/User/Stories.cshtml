@@ -38,7 +38,8 @@
                 url: "/User/GetStories/" + type,
                 method: "Get",
                 success: function (data) {
-                    $("#partialContent").html(data);                    
+                    $("#partialContent").html(data);    
+                    $("#divLoader").modal("hide");
                 },
                 complete: function (data) {
                     $("#divLoader").modal("hide");

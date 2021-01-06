@@ -2,9 +2,9 @@
 }
 
 .logo {
-    background-image: url(/Images/MediomLogo.png);
-    width: 180px;
-    height: 80px;
+    background: url(/Images/Logo.png) no-repeat;
+    width: 120px;
+    height: 50px;
 }
 .profile-lbl {
     font-weight:700;

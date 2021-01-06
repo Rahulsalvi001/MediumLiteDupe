@@ -53,7 +53,7 @@ namespace MediumLiteDupe.Controllers
             bool isSuccess = false;
             if (field == "Name" && string.IsNullOrWhiteSpace(val))
             {
-                msg = "Please user name";
+                msg = "Please enter user name";
             }
             else
             {
@@ -70,10 +70,9 @@ namespace MediumLiteDupe.Controllers
                     if (field == "Name")
                     {
                         Claim claim = User.FindFirst("FullName");
-                        Claim newClaim = new Claim("FullName123", val);
-                        _userManager.AddClaimAsync(curUser, newClaim).GetAwaiter().GetResult();
-                        var claim123 = _userManager.GetClaimsAsync(curUser).GetAwaiter().GetResult().ToList();
-                        var claimResult = _userManager.ReplaceClaimAsync(curUser, claim, new Claim("FullName123", "test")).GetAwaiter().GetResult();                        
+                        Claim newClaim = new Claim("FullName", val);
+                        _userManager.RemoveClaimAsync(curUser, claim).Wait();
+                        _userManager.AddClaimAsync(curUser, newClaim).Wait();
                     }
                     isSuccess = true;
                     msg = $"{field} is updated successfully";
@@ -170,7 +169,7 @@ namespace MediumLiteDupe.Controllers
             model.ModifiedOn = DateTime.Now;
             
             //string to byte array            
-            byte[] bytes = Encoding.ASCII.GetBytes(model.StoryContent);
+            byte[] bytes = Encoding.ASCII.GetBytes(model.StoryContent ?? "");
             if (model.Id > 0)
             {
                 model.StoryData = new StoryData { Data = bytes };
