@@ -42,7 +42,8 @@ namespace MediumLiteDupe.Areas.Identity.Pages.Account
 
         [BindProperty]
         public InputModel Input { get; set; }
-
+        [TempData]
+        public string ErrorMessage { get; set; }
         public string ReturnUrl { get; set; }
 
         public IList<AuthenticationScheme> ExternalLogins { get; set; }
@@ -71,6 +72,7 @@ namespace MediumLiteDupe.Areas.Identity.Pages.Account
 
         public async Task OnGetAsync(string returnUrl = null)
         {
+            ErrorMessage = null;
             ReturnUrl = returnUrl;
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
         }
@@ -114,6 +116,7 @@ namespace MediumLiteDupe.Areas.Identity.Pages.Account
                 }
                 foreach (var error in result.Errors)
                 {
+                    ErrorMessage += error.Description + "\n";
                     ModelState.AddModelError(string.Empty, error.Description);
                 }
             }

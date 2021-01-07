@@ -292,6 +292,8 @@ input[type=text] {
     height: 40px !important;
     border: 2px solid #f6f6f6 !important;
     margin-inline: 11px !important;
+    padding:8px !important;
+    text-align:left !important;
 }
 .Register-Input-lable 
 {

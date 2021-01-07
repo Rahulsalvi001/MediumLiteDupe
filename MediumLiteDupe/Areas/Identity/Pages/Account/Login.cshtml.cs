@@ -70,7 +70,7 @@ namespace MediumLiteDupe.Areas.Identity.Pages.Account
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
             await _signInManager.SignOutAsync();            
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
-
+            ErrorMessage = null;
             ReturnUrl = returnUrl;
         }
 
